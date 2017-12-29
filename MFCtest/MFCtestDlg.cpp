@@ -41,6 +41,8 @@ public:
 // 实现
 protected:
 	DECLARE_MESSAGE_MAP()
+public:
+//	afx_msg void OnTimer(UINT_PTR nIDEvent);
 };
 
 CAboutDlg::CAboutDlg() : CDialogEx(CAboutDlg::IDD)
@@ -53,6 +55,7 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
+//	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -85,6 +88,7 @@ BEGIN_MESSAGE_MAP(CMFCtestDlg, CDialogEx)
 	ON_COMMAND(ID_32773, &CMFCtestDlg::On32773)
 	ON_COMMAND(ID_32774, &CMFCtestDlg::On32774)
 	ON_COMMAND(ID_32775, &CMFCtestDlg::On32775)
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 // CMFCtestDlg 消息处理程序
@@ -150,7 +154,7 @@ BOOL CMFCtestDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
 	// TODO: 在此添加额外的初始化代码
-
+	SetTimer(1,30000,NULL);
 	
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -358,4 +362,28 @@ void CMFCtestDlg::On32774()
 void CMFCtestDlg::On32775()
 {
 	CMFCtestDlg::OnBnClickedButton3();
+}
+
+void CMFCtestDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+	switch(nIDEvent)      
+   {      
+   case 1: 
+	   {      
+    	if( ::QueryServiceStatus( hSvc, &status) == FALSE)
+		{
+			SetDlgItemText(IDC_PATH,"获取服务状态失败");
+			::CloseServiceHandle( hSvc);
+			::CloseServiceHandle( hSC);
+        
+		} else {
+			setStatus(status.dwCurrentState);
+			}
+	   }
+         break;      
+   default:   
+        break;     
+   } 
+	CDialogEx::OnTimer(nIDEvent);
 }
