@@ -22,6 +22,9 @@ char szPath[144];
 SC_HANDLE hSC ;
 SC_HANDLE hSvc ;
 SERVICE_STATUS status;
+CMenu trayMenu;  
+ 
+
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
 
 class CAboutDlg : public CDialogEx
@@ -79,6 +82,9 @@ BEGIN_MESSAGE_MAP(CMFCtestDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON1, &CMFCtestDlg::OnBnClickedButton1)
 	ON_BN_CLICKED(IDC_BUTTON2, &CMFCtestDlg::OnBnClickedButton2)
 	ON_BN_CLICKED(IDC_BUTTON3, &CMFCtestDlg::OnBnClickedButton3)
+	ON_COMMAND(ID_32773, &CMFCtestDlg::On32773)
+	ON_COMMAND(ID_32774, &CMFCtestDlg::On32774)
+	ON_COMMAND(ID_32775, &CMFCtestDlg::On32775)
 END_MESSAGE_MAP()
 
 // CMFCtestDlg 消息处理程序
@@ -92,9 +98,9 @@ BOOL CMFCtestDlg::OnInitDialog()
 	// IDM_ABOUTBOX 必须在系统命令范围内。
 	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
 	ASSERT(IDM_ABOUTBOX < 0xF000);
-	
+	trayMenu.LoadMenu(IDR_MENU1);
 	m_stMyProg.Create(m_hWnd,::LoadIcon(theApp.m_hInstance,MAKEINTRESOURCE(IDRETRY)), _T("This is a SystemTray example"));
-	CMenu* pSysMenu = GetSystemMenu(FALSE);
+	
 	if (__argc>1){	
 		strcat(serviceName,__argv[1]); 
 	} else {
@@ -124,6 +130,7 @@ BOOL CMFCtestDlg::OnInitDialog()
 			setStatus(status.dwCurrentState);
 		}
 	}
+	CMenu* pSysMenu = GetSystemMenu(FALSE);
 	if (pSysMenu != NULL)
 	{
 		BOOL bNameValid;
@@ -136,7 +143,7 @@ BOOL CMFCtestDlg::OnInitDialog()
 			pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
 		}
 	}
-
+	
 	// 设置此对话框的图标。当应用程序主窗口不是对话框时，框架将自动
 	//  执行此操作
 	SetIcon(m_hIcon, TRUE);			// 设置大图标
@@ -215,12 +222,17 @@ LRESULT CMFCtestDlg::OnTrayMsg(WPARAM wParam, LPARAM lParam)
         {
           case WM_LBUTTONDOWN:{
 			  ShowWindow(SW_SHOW);
-			  break;}
-          case WM_RBUTTONDOWN:
-              //then do another...
-           
 			  break;
-
+		  }
+		  case WM_RBUTTONDOWN:{
+			CMenu *pPopUp = trayMenu.GetSubMenu(0);  
+			CPoint pt;  
+			GetCursorPos(&pt);  
+			SetForegroundWindow();  
+			pPopUp->TrackPopupMenu(TPM_RIGHTBUTTON, pt.x, pt.y, this);  
+			PostMessage(WM_NULL, 0, 0); 
+			}
+			  break;
           default:
             break;
         }
@@ -283,27 +295,67 @@ void CMFCtestDlg::OnBnClickedButton3()
 }
 
 void CMFCtestDlg::setStatus(DWORD curStatus){
-				switch (status.dwCurrentState){
-			case SERVICE_STOPPED:
-				SetDlgItemText(IDC_PATH,"服务已停止");
+        CMenu *pPopUp = trayMenu.GetSubMenu(0); 
+		CHAR str[20]="状态：";
+		switch (status.dwCurrentState){
+			case SERVICE_STOPPED:{
+				strcat(str,"服务已停止");
+				SetDlgItemText(IDC_PATH,str);
+				pPopUp->ModifyMenuA(0,MF_BYPOSITION,ID_32776,str);
+				}
 			break;
-			case SERVICE_START_PENDING:
-				SetDlgItemText(IDC_PATH,"服务启动中");
+			case SERVICE_START_PENDING:{
+				strcat( str,"服务启动中");
+				SetDlgItemText(IDC_PATH,str);
+				pPopUp->ModifyMenuA(0,MF_BYPOSITION,ID_32776,str);
+				}
 			break;
-			case SERVICE_STOP_PENDING:
-				SetDlgItemText(IDC_PATH,"服务停止中");
+			case SERVICE_STOP_PENDING:{
+				strcat( str,"服务停止中");
+				SetDlgItemText(IDC_PATH,str);
+				pPopUp->ModifyMenuA(0,MF_BYPOSITION,ID_32776,str);
+				}
 			break;
-			case SERVICE_RUNNING:
-				SetDlgItemText(IDC_PATH,"服务已启动");
+			case SERVICE_RUNNING:{
+				strcat( str,"服务已启动");
+				SetDlgItemText(IDC_PATH,str);
+				pPopUp->ModifyMenuA(0,MF_BYPOSITION,ID_32776,str);
+				}
 			break;			
-			case SERVICE_CONTINUE_PENDING:
-				SetDlgItemText(IDC_PATH,"服务启动中");
+			case SERVICE_CONTINUE_PENDING:{
+				strcat( str,"服务启动中");
+				SetDlgItemText(IDC_PATH,str);
+				pPopUp->ModifyMenuA(0,MF_BYPOSITION,ID_32776,str);
+				}
 			break;			
-			case SERVICE_PAUSE_PENDING:
-				SetDlgItemText(IDC_PATH,"服务暂停中");
+			case SERVICE_PAUSE_PENDING:{
+				strcat( str,"服务暂停中");
+				SetDlgItemText(IDC_PATH,str);
+				pPopUp->ModifyMenuA(0,MF_BYPOSITION,ID_32776,str);
+				}
 			break;			
-			case SERVICE_PAUSED:
-				SetDlgItemText(IDC_PATH,"服务已暂停");
+			case SERVICE_PAUSED:{
+				strcat( str,"服务已暂停");
+				SetDlgItemText(IDC_PATH,str);
+				pPopUp->ModifyMenuA(0,MF_BYPOSITION,ID_32776,str);
+				}
 			break;
 			}
+}
+
+void CMFCtestDlg::On32773()
+{
+	 CMFCtestDlg::OnBnClickedButton1();
+}
+
+
+void CMFCtestDlg::On32774()
+{
+	CMFCtestDlg::OnBnClickedButton2();
+}
+
+
+void CMFCtestDlg::On32775()
+{
+	CMFCtestDlg::OnBnClickedButton3();
 }

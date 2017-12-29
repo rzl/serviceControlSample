@@ -40,4 +40,7 @@ public:
 	afx_msg void OnBnClickedButton2();
 	afx_msg void OnBnClickedButton3();
 	void setStatus(DWORD curStatus);
+	afx_msg void On32773();
+	afx_msg void On32774();
+	afx_msg void On32775();
 };
